@@ -915,11 +915,38 @@ class MainUi(QMainWindow,Ui_MainWindow):
         self.groupBox.setTitle('Serial port settings')
 
     def sendShow(self,keys,name):
+        """安全地显示发送的数据到文本浏览器
+        
+        Args:
+            keys: 要显示的十六进制字符串
+            name: 文本浏览器后缀 ('' 或 '_2')
+        """
         now_time = datetime.datetime.now().strftime("%H:%M:%S")
         showArr = '[' + str(now_time) + '] ' + re.sub(r"(?<=\w)(?=(?:\w\w)+$)", " ", keys.upper())
-        eval('self.textBrowser%s.append(showArr)' %name)
+        
+        # 使用字典映射替代 eval()，避免安全风险
+        text_browsers = {
+            '': self.textBrowser,
+            '_2': self.textBrowser_2,
+        }
+        
+        browser = text_browsers.get(name, self.textBrowser)
+        browser.append(showArr)
+    
     def clearShow(self,keys):
-        eval('self.textBrowser%s.clear()' %keys)
+        """安全地清空文本浏览器内容
+        
+        Args:
+            keys: 文本浏览器后缀 ('' 或 '_2')
+        """
+        # 使用字典映射替代 eval()，避免安全风险
+        text_browsers = {
+            '': self.textBrowser,
+            '_2': self.textBrowser_2,
+        }
+        
+        browser = text_browsers.get(keys, self.textBrowser)
+        browser.clear()
     def showBox(self,datas):
         QMessageBox.critical(self,'Error',datas)
 
