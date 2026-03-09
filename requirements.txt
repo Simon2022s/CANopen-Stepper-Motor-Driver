@@ -16,4 +16,4 @@ safety>=2.0.0
 
 # Building (optional)
 pyinstaller>=5.0.0
-upx-binary>=4.0.0
+# UPX is installed separately on CI, not via pip
