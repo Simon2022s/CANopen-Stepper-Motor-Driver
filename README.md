@@ -1,228 +1,151 @@
-# RS485 Stepper Motor Driver
+# CANopen Stepper Motor Driver
 
-[![Python CI](https://github.com/Simon2022s/RS485-Stepper-Motor-Driver/actions/workflows/python-ci.yml/badge.svg)](https://github.com/Simon2022s/RS485-Stepper-Motor-Driver/actions/workflows/python-ci.yml)
+[![Python CI](https://github.com/Simon2022s/CANopen-Stepper-Motor-Driver/actions/workflows/python-ci.yml/badge.svg)](https://github.com/Simon2022s/CANopen-Stepper-Motor-Driver/actions/workflows/python-ci.yml)
 
-A PyQt5-based RS485 stepper motor driver control software with Modbus RTU protocol support. Originally designed for the [AR28 closed-loop stepper motor driver](https://www.adampower.de/nema11-rs485-stepper-motor-driver), compatible with similar Modbus RTU devices.
+A PyQt5-based CANopen stepper motor driver control software for UC42 series drivers. Supports position mode, velocity mode, and homing mode via CANopen protocol.
 
-![AR28 Driver](bruce_bg.jpg)
+## Overview
 
-## 🚀 Features
+This project is developed for the UC42 CANopen communication stepper motor driver. It provides a graphical user interface for configuring CANopen connections, sending CAN frames, and controlling the motor driver.
 
-- **Serial Communication**: RS485 serial communication with automatic port detection
-- **Motor Control**: Speed, acceleration, deceleration, and position control
-- **Parameter Settings**: Current, PPR (pulses per revolution), and direction settings
-- **Real-time Monitoring**: Real-time query of speed, position, and current
-- **Motion Modes**: Continuous motion, incremental positioning, and absolute positioning
-- **Data Logging**: Command sending and receiving log support
-- **Beautiful UI**: Bruce Lee themed UI design
+## Features
 
-## 📋 System Requirements
+### 1. CANopen Network Settings
+- **Port Types**: PCAN, UARTCAN, socketCAN
+- **Serial Port Settings** (for serial-to-CAN gateway):
+  - COM port selection
+  - Serial baud rate setting (9600-921600)
+- **CAN Settings**:
+  - CAN bitrate selection (125K, 250K, 500K, 800K, 1M)
+- **Connection Control**:
+  - Connect/Disconnect buttons
+  - Status display
+
+### 2. Manual CAN Command
+- **ID Input**: Enter CAN ID (e.g., 0x601)
+- **Data Input**: Enter CAN data bytes (e.g., 2B 40 60 00 00 00 00 00)
+- **Send/Clear buttons**: Send CAN frame or clear input fields
+
+### 3. Communication Logs
+- Real-time display of TX/RX messages
+- Timestamps for each message
+- Save logs to file functionality
+
+## Installation
+
+### Prerequisites
 
 - Python 3.8+
-- Windows / Linux / macOS
-- RS485 to USB adapter
+- PyQt5 >= 5.15.0
+- pyserial >= 3.5
 
-## 🔧 Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Simon2022s/RS485-Stepper-Motor-Driver.git
-cd RS485-Stepper-Motor-Driver
-```
-
-### 2. Create Virtual Environment (Recommended)
-
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# Linux/macOS
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-**Method A: Using Launcher with Auto-Installation (Recommended)**
-
-Windows users can simply double-click:
-```
-start.bat
-```
-
-Or use the Python launcher:
-```bash
-python run.py
-```
-The launcher will automatically check and install missing dependencies.
-
-**Method B: Manual Installation**
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Or install only core dependencies:
-```bash
-pip install PyQt5>=5.15.0 pyserial>=3.5
-```
+Or install core dependencies:
 
-## 🎮 Usage
-
-### Run the Program
-
-**Method 1: Using Launcher (Auto-check Dependencies)**
-```bash
-# Windows
-start.bat
-
-# Or
-python run.py
-```
-
-**Method 2: Direct Run**
-```bash
-python BruceLee.py
-```
-
-**Note**: If running `python BruceLee.py` shows missing PyQt5 or pyserial errors, please install dependencies first:
 ```bash
 pip install PyQt5 pyserial
 ```
 
+## Usage
+
+### Run the Program
+
+```bash
+python canopen_main.py
+```
+
+Or use the launcher:
+
+```bash
+python run.py
+```
+
 ### Basic Operations
 
-1. **Connect Serial Port**: Click "Serial Setup" to configure port parameters, then click "Open"
-2. **Set Motor ID**: Enter motor address in the Motor ID input box (default: 1)
-3. **Set Parameters**: 
-   - Speed: Set target speed (pulses/second)
-   - Acceleration: Set acceleration value
-   - Deceleration: Set deceleration value
-4. **Control Motor**:
-   - Enable: Enable the motor
-   - ▶▶: Forward continuous motion
-   - ◀◀: Reverse continuous motion
-   - ||: Pause
-   - Disable: Disable the motor
+1. **Select Port Type**: Choose PCAN, UARTCAN, or socketCAN
+2. **Configure Channel**: Enter the appropriate channel (e.g., COM3 for UARTCAN, PCAN_USBBUS1 for PCAN)
+3. **Set CAN Bitrate**: Select the CAN bitrate (default: 500K)
+4. **Click Open**: Connect to the CAN bus
+5. **Send CAN Commands**: Enter CAN ID and Data, then click Send
+6. **View Logs**: Monitor communication in the logs area
 
-### Advanced Features
+### UARTCAN Settings
 
-- **Custom Commands**: Enter Modbus commands directly in the Hex Command area
-- **Query Function**: Use 🔍 button to query current parameter values
-- **Save Parameters**: Click Save to store parameters to motor EEPROM
+When selecting UARTCAN port type, a dialog will appear to configure the serial baud rate:
+- Options: 9600, 19200, 38400, 57600, 115200 (default)
 
-## 📁 Project Structure
+## File Structure
 
 ```
-RS485-Stepper-Motor-Driver/
-├── BruceLee.py              # Main program entry
-├── run.py                   # Auto-install dependencies and launch
-├── start.bat                # Windows one-click launcher
-├── longgeforeverUI.py       # Main UI interface
-├── rsNew.py                 # Serial port settings dialog UI
-├── system.py                # System settings module
-├── sendRes.py               # Serial communication thread
-├── crc.py                   # CRC16 checksum
-├── readIni.py               # Configuration file reader
-├── public.py                # Global variables
-├── log.py                   # Logging module
-├── system.ini               # Configuration file
+CANopen Stepper Motor Driver/
+├── canopen_main.py          # Main program
+├── canopen_ui.py            # UI definition
 ├── bruce_bg.jpg             # Background image
-├── logo.ico                 # Application icon
-├── wu.ico                   # Window icon
-├── requirements.txt         # Dependency list
-├── setup.cfg                # pytest configuration
-├── CODE_REVIEW.md           # Code review report
-├── CI_FIXES.md              # CI fixes record
-├── optimized_example.py     # Optimized code example
-└── tests/                   # Unit test directory
-    ├── __init__.py
-    └── test_crc.py
+├── requirements.txt         # Dependencies
+├── run.py                   # Launcher script
+├── start.bat                # Windows launcher
+└── INSTALL.md               # Installation guide
 ```
 
-## 🔌 Communication Protocol
+## CANopen Protocol
 
-This software uses **Modbus RTU** protocol to communicate with motor drivers.
+### Supported Port Types
 
-### Common Registers
+1. **PCAN**: PEAK-System CAN adapters
+2. **UARTCAN**: Serial-to-CAN gateway
+3. **socketCAN**: Linux CAN interface
 
-| Register Address | Function | Description |
-|-----------------|----------|-------------|
-| 0x0000 | Current | Read/Set current |
-| 0x0001 | PPR | Pulses per revolution |
-| 0x0003 | Standby Current | Standby current percentage |
-| 0x001A | Peak Current | Peak current percentage |
-| 0x0040 | Speed Low | Speed value low 16 bits |
-| 0x0041 | Speed High | Speed value high 16 bits |
-| 0x0042 | Acceleration Low | Acceleration low 16 bits |
-| 0x0043 | Acceleration High | Acceleration high 16 bits |
-| 0x0044 | Position Low | Position value low 16 bits |
-| 0x0045 | Position High | Position value high 16 bits |
-| 0x0046 | Control Mode | Start/Stop/Direction control |
-| 0x0048 | Position Mode | Incremental/Absolute mode |
+### CAN Bitrate Options
 
-### CRC Checksum
+- 125K (125 kbps)
+- 250K (250 kbps)
+- 500K (500 kbps) - Default
+- 800K (800 kbps)
+- 1M (1000 kbps)
 
-Uses standard Modbus RTU CRC16 checksum algorithm.
+## Hardware Connection
 
-## 🛠️ Development
+1. Use a serial-to-CAN gateway to connect PC and UC42 driver
+2. Connect CANH and CANL signal lines
+3. Ensure terminal resistor (120Ω) is correctly configured
 
-### Code Standards
+## Development
 
-- Follow PEP 8 code style
-- Use type annotations
-- Write docstrings
-
-### Run Tests
+### Running in Development Mode
 
 ```bash
-pytest
+python canopen_main.py
 ```
 
-### Code Checking
+### Dependencies
 
-```bash
-# Code style check
-flake8 .
-
-# Type check
-mypy .
-
-# Security check
-bandit -r .
+```
+PyQt5>=5.15.0
+pyserial>=3.5
 ```
 
-## 📦 Packaging
-
-Package as executable using PyInstaller:
-
-```bash
-pyinstaller --onefile --windowed --icon=logo.ico BruceLee.py
-```
-
-## 📝 Changelog
-
-### v1.0.0 (2026-03-09)
-- ✨ Initial release
-- 🎨 Bruce Lee themed UI
-- 🔧 AR28 driver support
-- 📊 Real-time parameter query
-
-## 🤝 Contributing
-
-Issues and Pull Requests are welcome!
-
-## 📄 License
+## License
 
 MIT License
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - PyQt5 - GUI framework
 - pySerial - Serial communication library
-- [Adam Power](https://www.adampower.de/nema11-rs485-stepper-motor-driver) - AR28 stepper motor driver reference design
+- UC42 CANopen Stepper Motor Driver manual
+
+## Notes
+
+1. **Electrical Safety**: Ensure power supply voltage is within DC12-36V range
+2. **CAN Bus**: Pay attention not to reverse CANH and CANL connections
+3. **Node ID**: Ensure node IDs do not conflict on the network
+4. **Bitrate**: All nodes must use the same CAN bitrate
+5. **Terminal Resistor**: 120Ω terminal resistors must be connected at both ends of CAN bus
 
 ---
 
