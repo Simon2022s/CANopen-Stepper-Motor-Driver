@@ -6,6 +6,11 @@ UI proportions match background image (800x667), top bar evenly distributed
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
+QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps)
+
+
 class CANopenButton(QtWidgets.QPushButton):
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
@@ -32,15 +37,16 @@ class CANopenButton(QtWidgets.QPushButton):
             }
         """)
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setFixedSize(800, 900)
-        
+        MainWindow.setFixedSize(800, 860)
+
         # Create central widget
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        
+
         # Set background image - tiled display, starting from top
         try:
             import os
@@ -56,22 +62,22 @@ class Ui_MainWindow(object):
                 """)
         except Exception as e:
             print(f"Background error: {e}")
-        
+
         # ========== Row 1: Port / Channel / Bit Rate / Open / Close ==========
         # Evenly distributed: total width 800, left/right margins 20 each, available 760
         # Port(40+90) + Channel(70+110) + BitRate(90+90) + Open(80) + Close(80) = 650
         # Spacing = (760-650)/4 = 27.5, rounded to 28
-        
+
         y = 20
         margin = 20
         spacing = 28
         x = margin
-        
+
         # Port: label 40 + dropdown 90 = 130
         self.label_port = QtWidgets.QLabel("Port:", self.centralwidget)
         self.label_port.setGeometry(QtCore.QRect(x, y, 40, 26))
         self.label_port.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+
         x += 40
         self.comboBox_port = QtWidgets.QComboBox(self.centralwidget)
         self.comboBox_port.setGeometry(QtCore.QRect(x, y, 90, 26))
@@ -94,13 +100,13 @@ class Ui_MainWindow(object):
                 selection-background-color: #00a1cb;
             }
         """)
-        
+
         # Channel: label 70 + text box 110 = 180
         x += 90 + spacing
         self.label_channel = QtWidgets.QLabel("Channel:", self.centralwidget)
         self.label_channel.setGeometry(QtCore.QRect(x, y, 70, 26))
         self.label_channel.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+
         x += 70
         self.lineEdit_channel = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_channel.setGeometry(QtCore.QRect(x, y, 110, 26))
@@ -114,13 +120,13 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Bit Rate: label 90 + dropdown 90 = 180
         x += 110 + spacing
         self.label_bitrate = QtWidgets.QLabel("CAN Bit Rate:", self.centralwidget)
         self.label_bitrate.setGeometry(QtCore.QRect(x, y, 90, 26))
         self.label_bitrate.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+
         x += 90
         self.comboBox_bitrate = QtWidgets.QComboBox(self.centralwidget)
         self.comboBox_bitrate.setGeometry(QtCore.QRect(x, y, 90, 26))
@@ -144,34 +150,33 @@ class Ui_MainWindow(object):
                 selection-background-color: #00a1cb;
             }
         """)
-        
-        # Open button: 80
+
+        # Open/Close toggle button: 80
         x += 90 + spacing
         self.pushButton_open = CANopenButton("Open", self.centralwidget)
         self.pushButton_open.setGeometry(QtCore.QRect(x, y, 80, 26))
         
-        # Close button: 80
-        x += 80 + spacing
-        self.pushButton_close = CANopenButton("Close", self.centralwidget)
-        self.pushButton_close.setGeometry(QtCore.QRect(x, y, 80, 26))
-        self.pushButton_close.setEnabled(False)
-        
+        # Disable/Enable toggle button (was Close button)
+        x += 73 + spacing
+        self.pushButton_disable = CANopenButton("Disable", self.centralwidget)
+        self.pushButton_disable.setGeometry(QtCore.QRect(x, y, 80, 26))
+
         # ========== Row 2: Manual CAN Command (ID + Data) ==========
         y = 60
         x = margin
-        
+
         self.label_manual = QtWidgets.QLabel("Manual CAN Command:", self.centralwidget)
         self.label_manual.setGeometry(QtCore.QRect(x, y, 150, 20))
         self.label_manual.setStyleSheet("color: #000000; background: transparent;")
-        
+
         y = 85
         x = margin
-        
+
         # ID label and text box
         self.label_id = QtWidgets.QLabel("ID:", self.centralwidget)
         self.label_id.setGeometry(QtCore.QRect(x, y, 25, 26))
         self.label_id.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+
         x += 30
         self.lineEdit_id = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_id.setGeometry(QtCore.QRect(x, y, 100, 26))
@@ -185,13 +190,13 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Data label and text box
         x += 100 + 15
         self.label_data = QtWidgets.QLabel("Data:", self.centralwidget)
         self.label_data.setGeometry(QtCore.QRect(x, y, 40, 26))
         self.label_data.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+
         x += 45
         self.lineEdit_data = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_data.setGeometry(QtCore.QRect(x, y, 250, 26))
@@ -205,57 +210,150 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Send, Clear and Fault Reset buttons
         x += 250 + 20
         self.pushButton_send = CANopenButton("Send", self.centralwidget)
-        self.pushButton_send.setGeometry(QtCore.QRect(x, y, 70, 26))
-        
-        x += 70 + 10
+        self.pushButton_send.setGeometry(QtCore.QRect(x, y, 80, 26))
+
+        x += 80 + 22
         self.pushButton_clear = CANopenButton("Clear", self.centralwidget)
-        self.pushButton_clear.setGeometry(QtCore.QRect(x, y, 60, 26))
-        
-        x += 60 + 10
+        self.pushButton_clear.setGeometry(QtCore.QRect(x, y, 80, 26))
+
+        x += 82 + 21
         self.pushButton_fault_reset = CANopenButton("Fault Reset", self.centralwidget)
         self.pushButton_fault_reset.setGeometry(QtCore.QRect(x, y, 90, 26))
-        self.pushButton_fault_reset.setStyleSheet("""
-            QPushButton {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(255, 100, 100, 220),
-                    stop:1 rgba(220, 80, 80, 220));
-                color: white;
-                border: 2px solid #ff4444;
+
+        # Define right_x for right column layout
+        right_x = 480
+
+        # ========== Basic Parameters Area ==========
+        y = 155
+        x = 480
+
+        self.label_basic_params = QtWidgets.QLabel("Basic Parameters", self.centralwidget)
+        self.label_basic_params.setGeometry(QtCore.QRect(x, y, 180, 20))
+        self.label_basic_params.setStyleSheet("color: #ffffff;  background: transparent;")
+        self.label_basic_params.setText("<font size='4'>Homing Mode</font>")
+
+
+
+        # Row 1: Node ID
+        y += 28
+        self.label_node_id = QtWidgets.QLabel("Node ID:", self.centralwidget)
+        self.label_node_id.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_node_id.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
+        self.lineEdit_node_id = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_node_id.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_node_id.setPlaceholderText("1")
+        self.lineEdit_node_id.setText("1")
+        self.lineEdit_node_id.setStyleSheet("""
+            QLineEdit {
+                background-color: rgba(255, 255, 255, 180);
+                color: #000000;
+                border: 1px solid #999999;
                 border-radius: 4px;
-                padding: 2px 8px;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(255, 120, 120, 230),
-                    stop:1 rgba(240, 100, 100, 230));
-                border: 2px solid #ff6666;
-            }
-            QPushButton:pressed {
-                background-color: rgba(200, 60, 60, 240);
+                padding: 2px;
             }
         """)
-        
+
+        # Row 2: Current
+        y += 32
+        x = right_x
+        self.label_current = QtWidgets.QLabel("Current:", self.centralwidget)
+        self.label_current.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_current.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
+        self.lineEdit_current = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_current.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_current.setPlaceholderText("10")
+        self.lineEdit_current.setText("10")
+        self.lineEdit_current.setStyleSheet("""
+            QLineEdit {
+                background-color: rgba(255, 255, 255, 180);
+                color: #000000;
+                border: 1px solid #999999;
+                border-radius: 4px;
+                padding: 2px;
+            }
+        """)
+
+        # Row 3: Microstep
+        y += 32
+        x = right_x
+        self.label_microstep = QtWidgets.QLabel("Microstep:", self.centralwidget)
+        self.label_microstep.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_microstep.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
+        self.lineEdit_microstep = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_microstep.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_microstep.setPlaceholderText("13")
+        self.lineEdit_microstep.setText("13")
+        self.lineEdit_microstep.setStyleSheet("""
+            QLineEdit {
+                background-color: rgba(255, 255, 255, 180);
+                color: #000000;
+                border: 1px solid #999999;
+                border-radius: 4px;
+                padding: 2px;
+            }
+        """)
+
+        # Row 4: CAN Bit Rate
+        y += 32
+        x = right_x
+        self.label_basic_bitrate = QtWidgets.QLabel("CAN Bit Rate:", self.centralwidget)
+        self.label_basic_bitrate.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_basic_bitrate.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
+        self.lineEdit_basic_bitrate = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_basic_bitrate.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_basic_bitrate.setPlaceholderText("2")
+        self.lineEdit_basic_bitrate.setText("2")
+        self.lineEdit_basic_bitrate.setStyleSheet("""
+            QLineEdit {
+                background-color: rgba(255, 255, 255, 180);
+                color: #000000;
+                border: 1px solid #999999;
+                border-radius: 4px;
+                padding: 2px;
+            }
+        """)
+
+        # Row 5: Query and Set buttons
+        y += 38
+        x = right_x
+        self.pushButton_query = CANopenButton("One-Click-Query", self.centralwidget)
+        self.pushButton_query.setGeometry(QtCore.QRect(x, y, 127, 28))
+
+        x += 169
+        self.pushButton_set = CANopenButton("One-Click-Set", self.centralwidget)
+        self.pushButton_set.setGeometry(QtCore.QRect(x, y, 127, 28))
+
         # ========== Velocity & Position Mode Area ==========
-        y = 125
-        x = 340
-        
-        self.label_mode = QtWidgets.QLabel("Velocity & Position Mode:", self.centralwidget)
+        y = 371
+        x = 480
+
+        self.label_mode = QtWidgets.QLabel("Velocity & Position Mode", self.centralwidget)
         self.label_mode.setGeometry(QtCore.QRect(x, y, 180, 20))
-        self.label_mode.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+        self.label_mode.setStyleSheet("color: #ffffff; background: transparent;")
+        self.label_mode.setText("<font size='4'>Velocity & Position Mode</font>")
+
         # Mode selection
         y += 25
-        self.label_op_mode = QtWidgets.QLabel("Work Mode:", self.centralwidget)
-        self.label_op_mode.setGeometry(QtCore.QRect(x, y, 45, 24))
-        self.label_op_mode.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 50
+        x = 480
+        self.label_op_mode = QtWidgets.QLabel("Working Mode:", self.centralwidget)
+        self.label_op_mode.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_op_mode.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.comboBox_op_mode = QtWidgets.QComboBox(self.centralwidget)
-        self.comboBox_op_mode.setGeometry(QtCore.QRect(x, y, 120, 24))
+        self.comboBox_op_mode.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.comboBox_op_mode.addItems(["Position", "Velocity"])
         self.comboBox_op_mode.setStyleSheet("""
             QComboBox {
@@ -272,18 +370,18 @@ class Ui_MainWindow(object):
                 selection-background-color: #00a1cb;
             }
         """)
-        
+
         # Row 1: Target Pos
         y += 32
-        x = 340
-        self.label_target_pos = QtWidgets.QLabel("Target Pos:", self.centralwidget)
-        self.label_target_pos.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_target_pos.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_target_pos = QtWidgets.QLabel("Set Pos. pulses:", self.centralwidget)
+        self.label_target_pos.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_target_pos.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_target_pos = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_target_pos.setGeometry(QtCore.QRect(x, y, 120, 24))
-        self.lineEdit_target_pos.setPlaceholderText("0")
+        self.lineEdit_target_pos.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_target_pos.setPlaceholderText("10000")
         self.lineEdit_target_pos.setStyleSheet("""
             QLineEdit {
                 background-color: rgba(255, 255, 255, 180);
@@ -293,18 +391,18 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 2: Target Vel
         y += 32
-        x = 340
-        self.label_target_vel = QtWidgets.QLabel("Target Vel:", self.centralwidget)
-        self.label_target_vel.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_target_vel.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_target_vel = QtWidgets.QLabel("Set Vel. Speed:", self.centralwidget)
+        self.label_target_vel.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_target_vel.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_target_vel = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_target_vel.setGeometry(QtCore.QRect(x, y, 120, 24))
-        self.lineEdit_target_vel.setPlaceholderText("0")
+        self.lineEdit_target_vel.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_target_vel.setPlaceholderText("50")
         self.lineEdit_target_vel.setStyleSheet("""
             QLineEdit {
                 background-color: rgba(255, 255, 255, 180);
@@ -314,18 +412,18 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 3: Max Vel
         y += 32
-        x = 340
-        self.label_max_vel = QtWidgets.QLabel("Max Vel:", self.centralwidget)
-        self.label_max_vel.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_max_vel.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_max_vel = QtWidgets.QLabel("Set Pos. Speed:", self.centralwidget)
+        self.label_max_vel.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_max_vel.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_max_vel = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_max_vel.setGeometry(QtCore.QRect(x, y, 120, 24))
-        self.lineEdit_max_vel.setPlaceholderText("1000")
+        self.lineEdit_max_vel.setGeometry(QtCore.QRect(x, y, 190, 24))
+        self.lineEdit_max_vel.setPlaceholderText("500")
         self.lineEdit_max_vel.setStyleSheet("""
             QLineEdit {
                 background-color: rgba(255, 255, 255, 180);
@@ -335,17 +433,17 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 4: Accel
         y += 32
-        x = 340
-        self.label_accel = QtWidgets.QLabel("Accel:", self.centralwidget)
-        self.label_accel.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_accel.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_accel = QtWidgets.QLabel("Acceleration:", self.centralwidget)
+        self.label_accel.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_accel.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_accel = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_accel.setGeometry(QtCore.QRect(x, y, 120, 24))
+        self.lineEdit_accel.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.lineEdit_accel.setPlaceholderText("1000")
         self.lineEdit_accel.setStyleSheet("""
             QLineEdit {
@@ -356,17 +454,17 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 5: Decel
         y += 32
-        x = 340
-        self.label_decel = QtWidgets.QLabel("Decel:", self.centralwidget)
-        self.label_decel.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_decel.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_decel = QtWidgets.QLabel("Deceleration:", self.centralwidget)
+        self.label_decel.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_decel.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_decel = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_decel.setGeometry(QtCore.QRect(x, y, 120, 24))
+        self.lineEdit_decel.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.lineEdit_decel.setPlaceholderText("1000")
         self.lineEdit_decel.setStyleSheet("""
             QLineEdit {
@@ -377,92 +475,44 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Start/Move Abs/Move Rel/Stop buttons
         y += 35
-        x = 340
+        x = 480
         self.pushButton_start = CANopenButton("Start", self.centralwidget)
-        self.pushButton_start.setGeometry(QtCore.QRect(x, y, 65, 28))
-        
-        x += 72
+        self.pushButton_start.setGeometry(QtCore.QRect(x, y, 55, 28))
+
+        x += 60
         self.pushButton_move_abs = CANopenButton("Move Abs", self.centralwidget)
-        self.pushButton_move_abs.setGeometry(QtCore.QRect(x, y, 75, 28))
-        self.pushButton_move_abs.setStyleSheet("""
-            QPushButton {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(100, 200, 100, 220),
-                    stop:1 rgba(80, 180, 80, 220));
-                color: white;
-                border: 2px solid #4cd964;
-                border-radius: 4px;
-                padding: 2px 8px;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(120, 220, 120, 230),
-                    stop:1 rgba(100, 200, 100, 230));
-            }
-        """)
-        
-        x += 82
+        self.pushButton_move_abs.setGeometry(QtCore.QRect(x, y, 84, 28))
+
+        x += 89
         self.pushButton_move_rel = CANopenButton("Move Rel", self.centralwidget)
-        self.pushButton_move_rel.setGeometry(QtCore.QRect(x, y, 75, 28))
-        self.pushButton_move_rel.setStyleSheet("""
-            QPushButton {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(150, 100, 200, 220),
-                    stop:1 rgba(130, 80, 180, 220));
-                color: white;
-                border: 2px solid #9b59b6;
-                border-radius: 4px;
-                padding: 2px 8px;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(170, 120, 220, 230),
-                    stop:1 rgba(150, 100, 200, 230));
-            }
-        """)
-        
-        x += 82
+        self.pushButton_move_rel.setGeometry(QtCore.QRect(x, y, 82, 28))
+
+        x += 87
         self.pushButton_stop = CANopenButton("Stop", self.centralwidget)
         self.pushButton_stop.setGeometry(QtCore.QRect(x, y, 60, 28))
-        self.pushButton_stop.setStyleSheet("""
-            QPushButton {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(255, 150, 50, 220),
-                    stop:1 rgba(220, 120, 30, 220));
-                color: white;
-                border: 2px solid #ff9933;
-                border-radius: 4px;
-                padding: 2px 12px;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(255, 170, 70, 230),
-                    stop:1 rgba(240, 140, 50, 230));
-            }
-        """)
-        
+
         # ========== Homing Mode Area (Vertical Layout) ==========
         y += 50
-        x = 340
-        
+        x = 480
+
         self.label_homing = QtWidgets.QLabel("Homing Mode:", self.centralwidget)
         self.label_homing.setGeometry(QtCore.QRect(x, y, 120, 20))
-        self.label_homing.setStyleSheet("color: #000000; font-weight: bold; background: transparent;")
-        
+        self.label_homing.setStyleSheet("color: #ffffff; font size: 16x; background: transparent;")
+        self.label_homing.setText("<font size='4'>Homing Mode</font>")
         # Row 1: Homing Method
         y += 28
-        self.label_homing_method = QtWidgets.QLabel("Method:", self.centralwidget)
-        self.label_homing_method.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_homing_method.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        self.label_homing_method = QtWidgets.QLabel("HM. Method:", self.centralwidget)
+        self.label_homing_method.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_homing_method.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.comboBox_homing_method = QtWidgets.QComboBox(self.centralwidget)
-        self.comboBox_homing_method.setGeometry(QtCore.QRect(x, y, 160, 24))
+        self.comboBox_homing_method.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.comboBox_homing_method.addItems([
-            "17: Neg Limit", "18: Pos Limit", "24: Pos Home", 
+            "17: Neg Limit", "18: Pos Limit", "24: Pos Home",
             "29: Neg Home", "41: Neg Stop", "42: Pos Stop"
         ])
         self.comboBox_homing_method.setStyleSheet("""
@@ -480,17 +530,17 @@ class Ui_MainWindow(object):
                 selection-background-color: #00a1cb;
             }
         """)
-        
+
         # Row 2: Speed
         y += 32
-        x = 340
-        self.label_homing_vel = QtWidgets.QLabel("Speed:", self.centralwidget)
-        self.label_homing_vel.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_homing_vel.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_homing_vel = QtWidgets.QLabel("HM. Speed:", self.centralwidget)
+        self.label_homing_vel.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_homing_vel.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_homing_vel = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_homing_vel.setGeometry(QtCore.QRect(x, y, 120, 24))
+        self.lineEdit_homing_vel.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.lineEdit_homing_vel.setPlaceholderText("100")
         self.lineEdit_homing_vel.setStyleSheet("""
             QLineEdit {
@@ -501,17 +551,17 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 3: Search
         y += 32
-        x = 340
-        self.label_homing_search = QtWidgets.QLabel("Search:", self.centralwidget)
-        self.label_homing_search.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_homing_search.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_homing_search = QtWidgets.QLabel("HM. Probing:", self.centralwidget)
+        self.label_homing_search.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_homing_search.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_homing_search = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_homing_search.setGeometry(QtCore.QRect(x, y, 120, 24))
+        self.lineEdit_homing_search.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.lineEdit_homing_search.setPlaceholderText("20")
         self.lineEdit_homing_search.setStyleSheet("""
             QLineEdit {
@@ -522,17 +572,17 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 4: Accel
         y += 32
-        x = 340
-        self.label_homing_accel = QtWidgets.QLabel("Accel:", self.centralwidget)
-        self.label_homing_accel.setGeometry(QtCore.QRect(x, y, 80, 24))
-        self.label_homing_accel.setStyleSheet("color: #000000; background: transparent;")
-        
-        x += 85
+        x = 480
+        self.label_homing_accel = QtWidgets.QLabel("Acceleration:", self.centralwidget)
+        self.label_homing_accel.setGeometry(QtCore.QRect(x, y, 95, 24))
+        self.label_homing_accel.setStyleSheet("color: #ffffff; background: transparent;")
+
+        x += 105
         self.lineEdit_homing_accel = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_homing_accel.setGeometry(QtCore.QRect(x, y, 120, 24))
+        self.lineEdit_homing_accel.setGeometry(QtCore.QRect(x, y, 190, 24))
         self.lineEdit_homing_accel.setPlaceholderText("500")
         self.lineEdit_homing_accel.setStyleSheet("""
             QLineEdit {
@@ -543,50 +593,34 @@ class Ui_MainWindow(object):
                 padding: 2px;
             }
         """)
-        
+
         # Row 5: Homing Start/Stop buttons
         y += 35
-        x = 340
+        x = 480
         self.pushButton_homing_start = CANopenButton("Homing Start", self.centralwidget)
-        self.pushButton_homing_start.setGeometry(QtCore.QRect(x, y, 100, 28))
-        
-        x += 110
+        self.pushButton_homing_start.setGeometry(QtCore.QRect(x, y, 120, 28))
+
+        x += 175
         self.pushButton_homing_stop = CANopenButton("Homing Stop", self.centralwidget)
-        self.pushButton_homing_stop.setGeometry(QtCore.QRect(x, y, 100, 28))
-        self.pushButton_homing_stop.setStyleSheet("""
-            QPushButton {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(255, 150, 50, 220),
-                    stop:1 rgba(220, 120, 30, 220));
-                color: white;
-                border: 2px solid #ff9933;
-                border-radius: 4px;
-                padding: 2px 12px;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgba(255, 170, 70, 230),
-                    stop:1 rgba(240, 140, 50, 230));
-            }
-        """)
-        
+        self.pushButton_homing_stop.setGeometry(QtCore.QRect(x, y, 120, 28))
+
         # ========== TWO COLUMN LAYOUT ==========
-        # Left column: Communication Logs (x=20, width=300)
-        # Right column: Velocity/Position/Homing Mode (x=340, width=440)
-        
+        # Left column: Communication Logs
+        # Right column: Velocity/Position/Homing Mode
+
         column_start_y = 125
         left_x = margin  # x = 20
-        right_x = 560  # Window 800, left margin 20, right margin 20 -> right_x = 800-20-220  # Symmetric: window 800, left margin 20, right column width 300, right margin 20
-        column_width = 300
-        column_height = 680  # Both columns same height
-        
+        # right_x already defined above (560)
+        column_width = 440
+        column_height = 700  # Both columns same height
+
         # ========== LEFT COLUMN: Communication Logs ==========
         y = column_start_y
-        
+
         self.label_logs = QtWidgets.QLabel("Communication Logs:", self.centralwidget)
         self.label_logs.setGeometry(QtCore.QRect(left_x, y, 150, 20))
         self.label_logs.setStyleSheet("color: #000000; background: transparent;")
-        
+
         # Communication Logs text area
         y += 25
         self.textEdit_log = QtWidgets.QTextEdit(self.centralwidget)
@@ -601,45 +635,46 @@ class Ui_MainWindow(object):
                 padding: 4px;
             }
         """)
-        
+
         # Bottom buttons (Clear Logs, Save Logs)
-        y += column_height - 30
+        y += column_height - 50
         self.pushButton_clear_logs = CANopenButton("Clear Logs", self.centralwidget)
-        self.pushButton_clear_logs.setGeometry(QtCore.QRect(left_x, y, 100, 32))
-        
-        x = left_x + 100 + 10
+        self.pushButton_clear_logs.setGeometry(QtCore.QRect(left_x, y, 180, 28))
+
+        x = left_x + 100 + 160
         self.pushButton_save_logs = CANopenButton("Save Logs", self.centralwidget)
-        self.pushButton_save_logs.setGeometry(QtCore.QRect(x, y, 100, 32))
-        
+        self.pushButton_save_logs.setGeometry(QtCore.QRect(x, y, 180, 28))
+
         # Set central widget
         MainWindow.setCentralWidget(self.centralwidget)
-        
+
         # Menu bar, status bar
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         MainWindow.setMenuBar(self.menubar)
-        
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         MainWindow.setStatusBar(self.statusbar)
-        
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    
+
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle("CANopen Stepper Motor Driver")
 
 
 class UartcanDialog(QtWidgets.QDialog):
     """UARTCAN Settings Dialog - Only Save and Cancel buttons"""
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("UARTCAN Setting")
         self.setFixedSize(300, 120)
         self.setModal(True)
-        
+
         self.label_baud = QtWidgets.QLabel("Baud Rate:", self)
         self.label_baud.setGeometry(QtCore.QRect(20, 20, 80, 25))
-        
+
         self.comboBox_baud = QtWidgets.QComboBox(self)
         self.comboBox_baud.setGeometry(QtCore.QRect(110, 18, 150, 25))
         self.comboBox_baud.addItems(["9600", "19200", "38400", "57600", "115200"])
@@ -662,37 +697,47 @@ class UartcanDialog(QtWidgets.QDialog):
                 selection-background-color: #00a1cb;
             }
         """)
-        
+
         self.btn_save = CANopenButton("Save", self)
         self.btn_save.setGeometry(QtCore.QRect(60, 70, 70, 28))
         self.btn_save.clicked.connect(self.on_save)
-        
+
         self.btn_cancel = CANopenButton("Cancel", self)
         self.btn_cancel.setGeometry(QtCore.QRect(160, 70, 70, 28))
         self.btn_cancel.clicked.connect(self.on_cancel)
-        
+
         self.result = False
         self.baud_rate = "115200"
-    
+
     def on_save(self):
         self.baud_rate = self.comboBox_baud.currentText()
         self.result = True
         self.accept()
-    
+
     def on_cancel(self):
         self.result = False
         self.reject()
-    
+
     def get_result(self):
         return self.result, self.baud_rate
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
+
+    # 再次确保DPI适配生效
+    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps)
+
+    # 设置全局字体，和代码2一致
+    font = QtGui.QFont("Microsoft YaHei UI", 9)
+    app.setFont(font)
+
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     app.setWindowIcon(QtGui.QIcon("./logo.ico"))
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
